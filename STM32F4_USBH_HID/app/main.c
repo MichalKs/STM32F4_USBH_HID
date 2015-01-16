@@ -25,16 +25,16 @@
 #include <keys.h>
 
 // USB includes
-#include <usbd_usr.h>
 #include <usb_conf.h>
-#include <usbd_desc.h>
-#include <usbd_hid_core.h>
+#include "usb_bsp.h"
+#include "usbh_core.h"
+#include "usbh_usr.h"
+#include "usbh_hid_core.h"
 
 #define SYSTICK_FREQ 1000 ///< Frequency of the SysTick set at 1kHz.
 #define COMM_BAUD_RATE 115200UL ///< Baud rate for communication with PC
 
 void softTimerCallback(void);
-void usbSoftTimerCallback(void);
 
 #define DEBUG
 
@@ -46,8 +46,8 @@ void usbSoftTimerCallback(void);
 #define println(str, args...) (void)0
 #endif
 
-__ALIGN_BEGIN USB_OTG_CORE_HANDLE USB_OTG_dev __ALIGN_END; ///< USB device handle
-
+__ALIGN_BEGIN USB_OTG_CORE_HANDLE           USB_OTG_Core_dev __ALIGN_END ;
+__ALIGN_BEGIN USBH_HOST                     USB_Host __ALIGN_END ;
 static uint8_t key;
 
 /**
@@ -65,8 +65,6 @@ int main(void) {
   int8_t timerID = TIMER_AddSoftTimer(1000, softTimerCallback);
   TIMER_StartSoftTimer(timerID); // start the timer
 
-  int8_t usbTimerID = TIMER_AddSoftTimer(20, usbSoftTimerCallback);
-  TIMER_StartSoftTimer(usbTimerID);
 
   LED_Init(LED0); // Add an LED
   LED_Init(LED1); // Add an LED
@@ -83,14 +81,21 @@ int main(void) {
   // test another way of measuring time delays
   uint32_t softTimer = TIMER_GetTime(); // get start time for delay
 
-  // Initialize USB device stack
-  USBD_Init(&USB_OTG_dev,
+
+  /* Init Host Library */
+  USBH_Init(&USB_OTG_Core_dev,
+#ifdef USE_USB_OTG_FS
             USB_OTG_FS_CORE_ID,
-            &USR_desc, // USB descriptors
-            &USBD_HID_cb, // class callbacks
-            &USR_cb); // user callbacks
+#else
+            USB_OTG_HS_CORE_ID,
+#endif
+            &USB_Host,
+            &HID_cb,
+            &USR_Callbacks);
 
   while (1) {
+
+    USBH_Process(&USB_OTG_Core_dev , &USB_Host);
 
     // test delay method
     if (TIMER_DelayTimer(1000, softTimer)) {
@@ -114,107 +119,6 @@ int main(void) {
     TIMER_SoftTimersUpdate(); // run timers
     key = KEYS_Update(); // run keyboard
 
-  }
-}
-
-#define HID_STEP 10 ///< Cursor step for every move
-
-/**
- * @brief Function return the current move step of HID device
- * @param buf Buffor to fill data.
- */
-void getHIDPosition(uint8_t* buf) {
-
-  int8_t x = 0, y = 0;
-  uint8_t buttons = 0;
-  static uint32_t buttonTimer;
-  static uint8_t debounce;
-
-  switch(key) {
-
-  case KEY1:
-    x = -HID_STEP;
-    y = -HID_STEP;
-    break;
-
-  case KEY2:
-    x = 0;
-    y = -HID_STEP;
-    break;
-
-  case KEY3:
-    x = HID_STEP;
-    y = -HID_STEP;
-    break;
-
-  case KEY4:
-    x = -HID_STEP;
-    y = 0;
-    break;
-
-  case KEY6:
-    x = HID_STEP;
-    y = 0;
-    break;
-
-  case KEY7:
-    x = -HID_STEP;
-    y = HID_STEP;
-    break;
-
-  case KEY8:
-    x = 0;
-    y = HID_STEP;
-    break;
-
-  case KEY9:
-    x = HID_STEP;
-    y = HID_STEP;
-    break;
-
-  case KEY_ASTERISK:
-//    if (!debounce) {
-//      buttonTimer = TIMER_GetTime();
-//      debounce = 1;
-      buttons |= 0x04; // left mouse button
-//    } else if (TIMER_DelayTimer(200, buttonTimer)) {
-//      debounce = 0;
-//    }
-      x = HID_STEP;
-      y = HID_STEP;
-    break;
-
-  case KEY_HASH:
-    buttons |= 0x01; // right mouse button
-    x = HID_STEP;
-    y = HID_STEP;
-    break;
-
-  default:
-    x = 0;
-    y = 0;
-
-  }
-
-  buf[0] = buttons;
-  buf[1] = x;
-  buf[2] = y;
-  buf[3] = 0;
-
-}
-
-/**
- * @brief Callback for periodic handling of
- * USB stuff.
- */
-void usbSoftTimerCallback(void) {
-
-  uint8_t buf[4];
-
-  getHIDPosition(buf);
-
-  if((buf[1] != 0) ||(buf[2] != 0)) {
-    USBD_HID_SendReport (&USB_OTG_dev, buf, 4);
   }
 }
 

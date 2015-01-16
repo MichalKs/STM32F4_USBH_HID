@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    usbd_conf.h
+  * @file    USBH_conf.h
   * @author  MCD Application Team
-  * @version V1.1.0
+  * @version V2.1.0
   * @date    19-March-2012
-  * @brief   USB Device configuration file
+  * @brief   General low level driver configuration
   ******************************************************************************
   * @attention
   *
@@ -26,45 +26,34 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USBD_CONF__H__
-#define __USBD_CONF__H__
+#ifndef __USBH_CONF__H__
+#define __USBH_CONF__H__
 
 /* Includes ------------------------------------------------------------------*/
-#include "usb_conf.h"
 
-/** @defgroup USB_CONF_Exported_Defines
+/** @addtogroup USBH_OTG_DRIVER
+  * @{
+  */
+  
+/** @defgroup USBH_CONF
+  * @brief usb otg low level driver configuration file
   * @{
   */ 
 
-#define USBD_CFG_MAX_NUM           1
-#define USBD_ITF_MAX_NUM           1
-
-#define USB_MAX_STR_DESC_SIZ       64 
-
-#define USBD_SELF_POWERED               
-
-
-
-#define USBD_DYNAMIC_DESCRIPTOR_CHANGE_ENABLED 
-
-/** @defgroup USB_String_Descriptors
+/** @defgroup USBH_CONF_Exported_Defines
   * @{
   */ 
 
-
-/** @defgroup USB_HID_Class_Layer_Parameter
-  * @{
-  */ 
-#define HID_IN_EP                    0x81
-#define HID_OUT_EP                   0x01
-
-#define HID_IN_PACKET                4
-#define HID_OUT_PACKET               4
+#define USBH_MAX_NUM_ENDPOINTS                2
+#define USBH_MAX_NUM_INTERFACES               2
+#define USBH_MSC_MPS_SIZE                 0x200
 
 /**
   * @}
   */ 
-/** @defgroup USB_CONF_Exported_Types
+
+
+/** @defgroup USBH_CONF_Exported_Types
   * @{
   */ 
 /**
@@ -72,21 +61,21 @@
   */ 
 
 
-/** @defgroup USB_CONF_Exported_Macros
+/** @defgroup USBH_CONF_Exported_Macros
   * @{
   */ 
 /**
   * @}
   */ 
 
-/** @defgroup USB_CONF_Exported_Variables
+/** @defgroup USBH_CONF_Exported_Variables
   * @{
   */ 
 /**
   * @}
   */ 
 
-/** @defgroup USB_CONF_Exported_FunctionsPrototype
+/** @defgroup USBH_CONF_Exported_FunctionsPrototype
   * @{
   */ 
 /**
@@ -94,7 +83,15 @@
   */ 
 
 
-#endif //__USBD_CONF__H__
+#endif //__USBH_CONF__H__
 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

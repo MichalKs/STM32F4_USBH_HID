@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
-  * @file    usbd_hid_core.h
+  * @file    usbh_hid_mouse.h 
   * @author  MCD Application Team
-  * @version V1.1.0
+  * @version V2.1.0
   * @date    19-March-2012
-  * @brief   header file for the usbd_hid_core.c file.
+  * @brief   This file contains all the prototypes for the usbh_hid_mouse.c
   ******************************************************************************
   * @attention
   *
@@ -25,86 +25,83 @@
   ******************************************************************************
   */ 
 
+
+/* Define to prevent recursive  ----------------------------------------------*/
+#ifndef __USBH_HID_MOUSE_H
+#define __USBH_HID_MOUSE_H
+
 /* Includes ------------------------------------------------------------------*/
+#include "usbh_hid_core.h"
 
-#ifndef __USB_HID_CORE_H_
-#define __USB_HID_CORE_H_
-
-#include  "usbd_ioreq.h"
-
-/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
-  * @{
-  */
-  
-/** @defgroup USBD_HID
-  * @brief This file is the Header file for USBD_msc.c
-  * @{
-  */ 
-
-
-/** @defgroup USBD_HID_Exported_Defines
-  * @{
-  */ 
-#define USB_HID_CONFIG_DESC_SIZ       34
-#define USB_HID_DESC_SIZ              9
-#define HID_MOUSE_REPORT_DESC_SIZE    74
-
-#define HID_DESCRIPTOR_TYPE           0x21
-#define HID_REPORT_DESC               0x22
-
-
-#define HID_REQ_SET_PROTOCOL          0x0B
-#define HID_REQ_GET_PROTOCOL          0x03
-
-#define HID_REQ_SET_IDLE              0x0A
-#define HID_REQ_GET_IDLE              0x02
-
-#define HID_REQ_SET_REPORT            0x09
-#define HID_REQ_GET_REPORT            0x01
-/**
-  * @}
-  */ 
-
-
-/** @defgroup USBD_CORE_Exported_TypesDefinitions
+/** @addtogroup USBH_LIB
   * @{
   */
 
+/** @addtogroup USBH_CLASS
+  * @{
+  */
 
-/**
-  * @}
-  */ 
+/** @addtogroup USBH_HID_CLASS
+  * @{
+  */
 
-
-
-/** @defgroup USBD_CORE_Exported_Macros
+/** @defgroup USBH_HID_MOUSE
+  * @brief This file is the Header file for USBH_HID_MOUSE.c
   * @{
   */ 
 
+
+/** @defgroup USBH_HID_MOUSE_Exported_Types
+  * @{
+  */ 
+typedef struct _HID_MOUSE_Data
+{
+  uint8_t              x; 
+  uint8_t              y;
+  uint8_t              z;               /* Not Supported */ 
+  uint8_t              button; 
+}
+HID_MOUSE_Data_TypeDef;
+
 /**
   * @}
   */ 
 
-/** @defgroup USBD_CORE_Exported_Variables
+/** @defgroup USBH_HID_MOUSE_Exported_Defines
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+/** @defgroup USBH_HID_MOUSE_Exported_Macros
+  * @{
+  */ 
+/**
+  * @}
+  */ 
+
+/** @defgroup USBH_HID_MOUSE_Exported_Variables
   * @{
   */ 
 
-extern USBD_Class_cb_TypeDef  USBD_HID_cb;
+extern HID_cb_TypeDef HID_MOUSE_cb;
+extern HID_MOUSE_Data_TypeDef	 HID_MOUSE_Data;
 /**
   * @}
   */ 
 
-/** @defgroup USB_CORE_Exported_Functions
+/** @defgroup USBH_HID_MOUSE_Exported_FunctionsPrototype
   * @{
   */ 
-uint8_t USBD_HID_SendReport (USB_OTG_CORE_HANDLE  *pdev, 
-                                 uint8_t *report,
-                                 uint16_t len);
+void  USR_MOUSE_Init (void);
+void  USR_MOUSE_ProcessData (HID_MOUSE_Data_TypeDef *data);
 /**
   * @}
   */ 
 
-#endif  // __USB_HID_CORE_H_
+#endif /* __USBH_HID_MOUSE_H */
+
 /**
   * @}
   */ 
@@ -112,5 +109,12 @@ uint8_t USBD_HID_SendReport (USB_OTG_CORE_HANDLE  *pdev,
 /**
   * @}
   */ 
-  
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
